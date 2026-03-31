@@ -23,7 +23,7 @@ public class Profile {
 
     private String profileDescription;
     @JsonIgnore
-    @OneToOne(mappedBy = "userProfile",fetch = FetchType.EAGER)
+    @OneToOne(mappedBy = "profile",fetch = FetchType.EAGER)
     private User user;
 
     @OneToOne(cascade = CascadeType.ALL)

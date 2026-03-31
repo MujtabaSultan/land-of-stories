@@ -12,8 +12,9 @@ import java.util.UUID;
 @Data
 public class Story {
 
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     private String title;
 
@@ -24,7 +25,7 @@ public class Story {
 
     @OneToMany(mappedBy = "story" , orphanRemoval = true , fetch = FetchType.EAGER)
     @JsonIgnore
-    private List<Story> stories;
+    private List<Rating> ratings;
 
     @OneToMany(mappedBy = "story" , orphanRemoval = true , fetch = FetchType.EAGER)
     @JsonIgnore
@@ -33,6 +34,10 @@ public class Story {
     @OneToMany(mappedBy = "story" , orphanRemoval = true , fetch = FetchType.EAGER)
     @JsonIgnore
     private List<Report> reports;
+
+    @ManyToOne
+    @JoinColumn(name = "profile_id")
+    private Profile profile;
 
 
 

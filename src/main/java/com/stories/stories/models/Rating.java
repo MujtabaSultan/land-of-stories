@@ -1,12 +1,16 @@
 package com.stories.stories.models;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
+@Entity
 public class Rating {
 
 
-    private long id;
+    @Id
+    private Long id;
 
     private int score;
 

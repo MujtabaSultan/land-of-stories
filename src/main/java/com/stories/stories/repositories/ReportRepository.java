@@ -1,6 +1,9 @@
 package com.stories.stories.repositories;
 
+import com.stories.stories.models.Report;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface ReportRepository extends JpaRepository {
+@Repository
+public interface ReportRepository extends JpaRepository<Report,Long> {
 }

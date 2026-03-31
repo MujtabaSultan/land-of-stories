@@ -9,8 +9,6 @@ import java.util.List;
 @Data
 public class UserDto {
 
-    private Long id;
-
     private String userName;
     private String emailAddress;
     private String password;
@@ -19,7 +17,6 @@ public class UserDto {
 
     private boolean accountVerified;
     private boolean isActivated;
-    private Long id;
 
     private String firstName;
 

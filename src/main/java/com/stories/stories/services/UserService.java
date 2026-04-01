@@ -5,12 +5,14 @@ import com.stories.stories.mailing.EmailService;
 import com.stories.stories.models.*;
 import com.stories.stories.repositories.ProfileRepository;
 import com.stories.stories.repositories.UserRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
 
+    @Value("${site.base.url.https}")
     private String baseurl;
     private UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -61,6 +63,7 @@ public class UserService {
 
         newUser.setProfile(inputProfile);
         userRepository.save(newUser);
+        sendConfirmationEmail(newUser);
 
 
 

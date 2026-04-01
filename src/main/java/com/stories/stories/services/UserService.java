@@ -2,9 +2,7 @@ package com.stories.stories.services;
 
 import com.stories.stories.mailing.AccountVerificationEmailContext;
 import com.stories.stories.mailing.EmailService;
-import com.stories.stories.models.Profile;
-import com.stories.stories.models.User;
-import com.stories.stories.models.UserDto;
+import com.stories.stories.models.*;
 import com.stories.stories.repositories.ProfileRepository;
 import com.stories.stories.repositories.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,17 +11,22 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserService {
 
+    private String baseurl;
     private UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private ProfileRepository profileRepository;
+    private final SecureTokenService secureTokenService;
     private EmailService emailService;
 
-    public UserService(UserRepository userRepository,PasswordEncoder passwordEncoder,EmailService emailService,
+    public UserService(UserRepository userRepository
+            ,PasswordEncoder passwordEncoder,SecureTokenService secureTokenService
+            ,EmailService emailService,
                        ProfileRepository profileRepository){
         this.passwordEncoder=passwordEncoder;
         this.emailService=emailService;
         this.profileRepository=profileRepository;
         this.userRepository=userRepository;
+        this.secureTokenService=secureTokenService;
     }
 
     public void sendConfirmationEmail(User user) {

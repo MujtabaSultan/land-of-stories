@@ -1,5 +1,7 @@
 package com.stories.stories.services;
 
+import com.stories.stories.mailing.AccountVerificationEmailContext;
+import com.stories.stories.mailing.EmailService;
 import com.stories.stories.models.Profile;
 import com.stories.stories.models.User;
 import com.stories.stories.models.UserDto;
@@ -14,16 +16,33 @@ public class UserService {
     private UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private ProfileRepository profileRepository;
+    private EmailService emailService;
 
-    public UserService(UserRepository userRepository,PasswordEncoder passwordEncoder,
+    public UserService(UserRepository userRepository,PasswordEncoder passwordEncoder,EmailService emailService,
                        ProfileRepository profileRepository){
         this.passwordEncoder=passwordEncoder;
+        this.emailService=emailService;
         this.profileRepository=profileRepository;
         this.userRepository=userRepository;
     }
 
+    public void sendConfirmationEmail(User user) {
+        SecureToken secureToken = secureTokenService.createToken();
+        secureToken.setUser(user);
+        secureTokenService.saveSecureToken(secureToken);
+        AccountVerificationEmailContext context = new AccountVerificationEmailContext();
+        context.init(user);
+        context.setToken(secureToken.getToken());
+        context.buildVerificationUrl(baseurl, secureToken.getToken());
+
+        System.out.println("sending email to " + user.getEmailAddress());
+        emailService.sendMail(context);
+    }
 
     public User createUser(UserDto userObj){
+
+        User existingUser = userRepository.findByEmailAddress(userObj.getEmailAddress());
+
 
         User newUser = new User();
         String hashedPass = passwordEncoder.encode(userObj.getPassword());
@@ -39,6 +58,7 @@ public class UserService {
 
         newUser.setProfile(inputProfile);
         userRepository.save(newUser);
+
 
 
         return newUser;

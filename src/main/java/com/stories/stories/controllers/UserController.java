@@ -1,5 +1,6 @@
 package com.stories.stories.controllers;
 
+import com.stories.stories.models.ForgotPasswordDto;
 import com.stories.stories.models.User;
 import com.stories.stories.models.UserDto;
 import com.stories.stories.services.UserService;
@@ -29,10 +30,11 @@ public class UserController {
         userService.validate(token);
     }
 
-    @GetMapping("/reset-password")
-    public void passwordReset(@RequestBody User user){
+    @PostMapping("/forgot-password")
+    public void passwordReset(@RequestBody ForgotPasswordDto emailDto){
+        System.out.println(emailDto.getEmailAddress());
         System.out.println("calling reset in controller ========>");
-        userService.resetPassword(user.getEmailAddress());
+        userService.resetPassword(emailDto.getEmailAddress());
     }
 
 }

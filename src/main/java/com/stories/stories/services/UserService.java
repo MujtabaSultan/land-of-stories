@@ -1,5 +1,6 @@
 package com.stories.stories.services;
 
+import com.stories.stories.mailing.AccountPasswordResetEmailContext;
 import com.stories.stories.mailing.AccountVerificationEmailContext;
 import com.stories.stories.mailing.EmailService;
 import com.stories.stories.models.*;
@@ -79,7 +80,20 @@ public class UserService {
         User user = userRepository.findByEmailAddress(email);
         return user;
     }
+    public void resetPassword(String email) {
+        System.out.println("service got this oooooooooo" +email);
+        SecureToken secureToken = secureTokenService.createToken();
+        User user = userRepository.findByEmailAddress(email);
+        System.out.println(user);
+        System.out.println("service found user ====> " + user.getUserName());
+        secureToken.setUser(user);
+        secureTokenService.saveSecureToken(secureToken);
+        AccountPasswordResetEmailContext context = new AccountPasswordResetEmailContext();
+        context.init(user);
+        context.setToken(secureToken.getToken());
+        context.buildResetUrl(baseurl, secureToken.getToken());
 
-    public void resetPassword(String emailAddress) {
+        System.out.println("sending email to " + user.getEmailAddress());
+        emailService.sendMail(context);
     }
 }

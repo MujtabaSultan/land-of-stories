@@ -65,9 +65,14 @@ public class UserService {
         userRepository.save(newUser);
         sendConfirmationEmail(newUser);
 
-
-
         return newUser;
+    }
+
+    public void validate(String token) {
+        SecureToken secureToken = secureTokenService.findByToken(token);
+        User user = secureToken.getUser();
+        user.setAccountVerified(true);
+        userRepository.save(user);
     }
 
     public User findUserByEmail(String email){

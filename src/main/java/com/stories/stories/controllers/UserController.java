@@ -29,4 +29,10 @@ public class UserController {
         userService.validate(token);
     }
 
+    @GetMapping("/reset-password")
+    public void passwordReset(@RequestBody User user){
+        System.out.println("calling reset in controller ========>");
+        userService.resetPassword(user.getEmailAddress());
+    }
+
 }

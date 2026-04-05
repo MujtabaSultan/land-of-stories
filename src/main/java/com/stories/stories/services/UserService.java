@@ -79,4 +79,7 @@ public class UserService {
         User user = userRepository.findByEmailAddress(email);
         return user;
     }
+
+    public void resetPassword(String emailAddress) {
+    }
 }

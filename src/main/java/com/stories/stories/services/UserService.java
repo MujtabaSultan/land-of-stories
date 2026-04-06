@@ -152,4 +152,13 @@ public class UserService {
             return ResponseEntity.ok("password username/email incorrect");
         }
     }
+
+    public void softDelete() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
+        User user = myUserDetails.getUser();
+        user.setActivated(false);
+        //user.setAccountVerified(false);
+        userRepository.save(user);
+    }
 }

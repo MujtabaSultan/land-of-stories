@@ -6,8 +6,12 @@ import com.stories.stories.mailing.EmailService;
 import com.stories.stories.models.*;
 import com.stories.stories.repositories.ProfileRepository;
 import com.stories.stories.repositories.UserRepository;
+import com.stories.stories.security.JWTUtils;
 import com.stories.stories.security.MyUserDetails;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,16 +27,22 @@ public class UserService {
     private ProfileRepository profileRepository;
     private final SecureTokenService secureTokenService;
     private EmailService emailService;
+    private final AuthenticationManager authenticationManager;
+    private final JWTUtils jwtUtils;
 
     public UserService(UserRepository userRepository
             ,PasswordEncoder passwordEncoder,SecureTokenService secureTokenService
             ,EmailService emailService,
-                       ProfileRepository profileRepository){
+                       JWTUtils jwtUtils,
+                       ProfileRepository profileRepository,
+                       AuthenticationManager authenticationManager){
         this.passwordEncoder=passwordEncoder;
         this.emailService=emailService;
         this.profileRepository=profileRepository;
         this.userRepository=userRepository;
         this.secureTokenService=secureTokenService;
+        this.authenticationManager=authenticationManager;
+        this.jwtUtils=jwtUtils;
     }
 
     public void sendConfirmationEmail(User user) {
@@ -66,6 +76,7 @@ public class UserService {
         inputProfile.setLastName(userObj.getLastName());
 
         newUser.setProfile(inputProfile);
+        newUser.setActivated(true);
         userRepository.save(newUser);
         sendConfirmationEmail(newUser);
 
@@ -118,6 +129,23 @@ public class UserService {
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public ResponseEntity<?> loginUser(LoginRequest loginRequest) {
+        try {
+            System.out.println("this persooooooooon" + loginRequest.getEmail());
+            Authentication authentication = authenticationManager
+                    .authenticate(new UsernamePasswordAuthenticationToken(loginRequest
+                            .getEmail(), loginRequest.getPassword()));
+            System.out.println(authentication);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
+            final String JWT = jwtUtils.generateJwtToken(myUserDetails);
+            return ResponseEntity.ok(JWT);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.ok("password username/email incorrect");
         }
     }
 }

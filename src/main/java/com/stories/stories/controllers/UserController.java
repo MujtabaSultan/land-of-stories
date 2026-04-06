@@ -1,10 +1,8 @@
 package com.stories.stories.controllers;
 
-import com.stories.stories.models.ChangePasswordRequest;
-import com.stories.stories.models.ForgotPasswordDto;
-import com.stories.stories.models.User;
-import com.stories.stories.models.UserDto;
+import com.stories.stories.models.*;
 import com.stories.stories.services.UserService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,6 +16,11 @@ public class UserController {
     }
 
 
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest){
+        System.out.println("calling login request in service ==========>");
+        return userService.loginUser(loginRequest);
+    }
 
     @PostMapping("/register")
     public User createUser(@RequestBody UserDto userObj){
@@ -43,5 +46,7 @@ public class UserController {
         userService.changePassword(request.getOldPass(), request.getNewPass() );
         //userService.resetPassword(user.getEmailAddress());
     }
+
+
 
 }

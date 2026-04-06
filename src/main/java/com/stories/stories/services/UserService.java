@@ -6,7 +6,10 @@ import com.stories.stories.mailing.EmailService;
 import com.stories.stories.models.*;
 import com.stories.stories.repositories.ProfileRepository;
 import com.stories.stories.repositories.UserRepository;
+import com.stories.stories.security.MyUserDetails;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -98,5 +101,23 @@ public class UserService {
     }
 
     public void changePassword(String oldPass, String newPass) {
+
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+        MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
+        System.out.println("the useeeer");
+        User user = myUserDetails.getUser();
+        if (newPass == null) {
+            System.out.println("no pass was provided");
+        }
+        try {
+            if (passwordEncoder.matches(oldPass, user.getPassword())) {
+
+                user.setPassword(passwordEncoder.encode(newPass));
+                userRepository.save(user);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

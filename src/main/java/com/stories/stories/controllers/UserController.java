@@ -1,5 +1,6 @@
 package com.stories.stories.controllers;
 
+import com.stories.stories.models.ChangePasswordRequest;
 import com.stories.stories.models.ForgotPasswordDto;
 import com.stories.stories.models.User;
 import com.stories.stories.models.UserDto;
@@ -36,6 +37,11 @@ public class UserController {
         System.out.println("calling reset in controller ========>");
         userService.resetPassword(emailDto.getEmailAddress());
     }
-
+    @PutMapping("/change-password")
+    public void changePassword(@RequestBody ChangePasswordRequest request){
+        System.out.println("calling change password in controller ========>");
+        userService.changePassword(request.getOldPass(), request.getNewPass() );
+        //userService.resetPassword(user.getEmailAddress());
+    }
 
 }

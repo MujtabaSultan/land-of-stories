@@ -96,4 +96,7 @@ public class UserService {
         System.out.println("sending email to " + user.getEmailAddress());
         emailService.sendMail(context);
     }
+
+    public void changePassword(String oldPass, String newPass) {
+    }
 }

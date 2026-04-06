@@ -47,6 +47,11 @@ public class UserController {
         //userService.resetPassword(user.getEmailAddress());
     }
 
+    @DeleteMapping("/delete")
+    public void softDelete(){
+        System.out.println("calling soft delete user in user controller ========>");
+        userService.softDelete();
+    }
 
 
 }

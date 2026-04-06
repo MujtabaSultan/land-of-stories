@@ -30,11 +30,12 @@ public class UserController {
         userService.validate(token);
     }
 
-    @PostMapping("/forgot-password")
+    @GetMapping("/forgot-password")
     public void passwordReset(@RequestBody ForgotPasswordDto emailDto){
         System.out.println(emailDto.getEmailAddress());
         System.out.println("calling reset in controller ========>");
         userService.resetPassword(emailDto.getEmailAddress());
     }
+
 
 }

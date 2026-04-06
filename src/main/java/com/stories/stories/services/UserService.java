@@ -118,6 +118,7 @@ public class UserService {
         MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
         System.out.println("the useeeer");
         User user = myUserDetails.getUser();
+        System.out.println(user);
         if (newPass == null) {
             System.out.println("no pass was provided");
         }
@@ -126,6 +127,9 @@ public class UserService {
 
                 user.setPassword(passwordEncoder.encode(newPass));
                 userRepository.save(user);
+            }
+            else {
+                System.out.println("wrong old password" + oldPass + "old is " + user.getPassword());
             }
         } catch (Exception e) {
             throw new RuntimeException(e);

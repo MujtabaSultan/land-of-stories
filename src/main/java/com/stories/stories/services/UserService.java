@@ -162,4 +162,18 @@ public class UserService {
         //user.setAccountVerified(false);
         userRepository.save(user);
     }
+
+    public void resetPasswordActivator(String token, ForgotPasswordForm form) {
+        System.out.println("currently goin through the reset validator iiiiiiiiiiiiiiii");
+        SecureToken secureToken = secureTokenService.findByToken(token);
+        System.out.println("zzzzzzzzzzzzzzzzz");
+        System.out.println(secureToken);
+        User user = secureToken.getUser();
+        System.out.println(user);
+        System.out.println("bbbbbbbbbbbbb");
+        System.out.println(form);
+        user.setPassword(passwordEncoder.encode(form.getPassword()));
+        userRepository.save(user);
+
+    }
 }

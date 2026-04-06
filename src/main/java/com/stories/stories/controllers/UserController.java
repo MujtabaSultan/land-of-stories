@@ -37,13 +37,21 @@ public class UserController {
     @GetMapping("/forgot-password")
     public void passwordReset(@RequestBody ForgotPasswordDto emailDto){
         System.out.println(emailDto.getEmailAddress());
-        System.out.println("calling reset in controller ========>");
+        System.out.println("calling forgot in controller ========>");
         userService.resetPassword(emailDto.getEmailAddress());
     }
     @PostMapping("/reset-password")
-    public void passwordResetActivator(@RequestBody User user ,@RequestParam String token){
-        System.out.println("calling reset activator in controller ========>");
-        userService.resetPasswordActivator(token,user);
+    public void passwordResetActivator(@RequestBody ForgotPasswordForm form ,@RequestParam String token){
+
+       try{
+           System.out.println("this got called for some reason xxxx" + form );
+           System.out.println("calling reset activator in controller ========>");
+           userService.resetPasswordActivator(token,form);
+       } catch (Exception e) {
+           e.printStackTrace();
+           throw new RuntimeException(e);
+       }
+
         //userService.resetPassword(user.getEmailAddress());
     }
     @PutMapping("/change-password")

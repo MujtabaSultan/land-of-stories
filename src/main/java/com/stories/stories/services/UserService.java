@@ -155,6 +155,7 @@ public class UserService {
 
     public void softDelete() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println(authentication.getPrincipal());
         MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
         User user = myUserDetails.getUser();
         user.setActivated(false);

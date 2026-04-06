@@ -40,6 +40,12 @@ public class UserController {
         System.out.println("calling reset in controller ========>");
         userService.resetPassword(emailDto.getEmailAddress());
     }
+    @PostMapping("/reset-password")
+    public void passwordResetActivator(@RequestBody User user ,@RequestParam String token){
+        System.out.println("calling reset activator in controller ========>");
+        userService.resetPasswordActivator(token,user);
+        //userService.resetPassword(user.getEmailAddress());
+    }
     @PutMapping("/change-password")
     public void changePassword(@RequestBody ChangePasswordRequest request){
         System.out.println("calling change password in controller ========>");

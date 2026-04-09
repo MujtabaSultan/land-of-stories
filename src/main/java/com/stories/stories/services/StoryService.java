@@ -40,4 +40,14 @@ public class StoryService {
         story.setProfile(user.getProfile());
         return storyRepository.save(story);
     }
+    public void deleteStory(Long id){
+        Story story =storyRepository.findById(id).orElseGet(null);
+        User currentUser = userService.getUser();
+        if(story.getProfile().getId().equals(currentUser.getProfile().getId())){
+            storyRepository.deleteById(id);
+        }
+        else {
+            System.out.println("thats not yours to delete");
+        }
+    }
 }

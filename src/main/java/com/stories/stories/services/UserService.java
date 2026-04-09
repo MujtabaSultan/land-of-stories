@@ -176,4 +176,7 @@ public class UserService {
         userRepository.save(user);
 
     }
+    public User getUser() {
+        return ((MyUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
+    }
 }

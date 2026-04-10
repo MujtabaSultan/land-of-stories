@@ -1,5 +1,6 @@
 package com.stories.stories.services;
 
+import com.stories.stories.models.Rating;
 import com.stories.stories.models.Story;
 import com.stories.stories.models.StoryRequest;
 import com.stories.stories.models.User;
@@ -49,5 +50,18 @@ public class StoryService {
         else {
             System.out.println("thats not yours to delete");
         }
+    }
+    public void rateStory(Long storyId,int rating){
+
+        User user = userService.getUser();
+        Story story = storyRepository.findById(storyId).orElse(null);
+
+        Rating newRating = new Rating();
+        newRating.setScore(rating);
+        newRating.setStory(story);
+        newRating.setProfile(user.getProfile());
+        ratingRepository.save(newRating);
+
+
     }
 }

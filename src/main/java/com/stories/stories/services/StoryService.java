@@ -54,7 +54,8 @@ public class StoryService {
     public void rateStory(Long storyId,int rating){
 
         User user = userService.getUser();
-        Story story = storyRepository.findById(storyId).orElse(null);
+
+        Story story = storyRepository.findById(storyId).orElseThrow(()->new RuntimeException("story doesnt exist " + storyId));
 
         Rating newRating = new Rating();
         newRating.setScore(rating);
@@ -63,5 +64,9 @@ public class StoryService {
         ratingRepository.save(newRating);
 
 
+    }
+
+    public List<Story> allStories(){
+        return storyRepository.findAll();
     }
 }

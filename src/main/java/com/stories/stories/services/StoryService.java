@@ -69,4 +69,7 @@ public class StoryService {
     public List<Story> allStories(){
         return storyRepository.findAll();
     }
+    public Story singleStory(Long id){
+        return storyRepository.findById(id).orElseThrow(()->new RuntimeException("this story doesnt exist" + id));
+    }
 }

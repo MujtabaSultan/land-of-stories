@@ -5,6 +5,8 @@ import com.stories.stories.models.Story;
 import com.stories.stories.models.StoryRequest;
 import com.stories.stories.models.User;
 import com.stories.stories.repositories.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -62,7 +64,6 @@ public class StoryService {
         newRating.setStory(story);
         newRating.setProfile(user.getProfile());
         ratingRepository.save(newRating);
-
 
     }
 

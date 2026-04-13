@@ -2,11 +2,11 @@ package com.stories.stories.controllers;
 
 
 import com.stories.stories.models.Story;
+import com.stories.stories.models.StoryRequest;
 import com.stories.stories.services.StoryService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -25,6 +25,11 @@ public class StoryController {
         return storyService.allStories();
     }
 
+    @PostMapping
+    public Story createStory(@RequestBody StoryRequest request) {
+
+         return storyService.createStory(request);
+    }
 
 
 }

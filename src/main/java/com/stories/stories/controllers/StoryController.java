@@ -31,5 +31,9 @@ public class StoryController {
          return storyService.createStory(request);
     }
 
+    @DeleteMapping("/{storyId}")
+    public void deleteStory(@PathVariable Long storyId) {
+        storyService.deleteStory(storyId);
+    }
 
 }

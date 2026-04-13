@@ -69,9 +69,7 @@ public class StoryService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Story not found"));
     }
     public Report reportStory(Long storyId, ReportRequest request) {
-        if (request == null || request.getComplaint() == null || request.getComplaint().trim().isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "the complaint is missing");
-        }
+        checker(request.getComplaint());
 
         Story story = getStoryOrThrow(storyId);
         User user = userService.getUser();
@@ -90,4 +88,24 @@ public class StoryService {
     }
     public Story singleStory(Long id){
         return getStoryOrThrow(id);}
+
+    public Comment addComment(Long storyId, CommentRequest request) {
+
+        checker(request.getContent());
+
+        Story story = getStoryOrThrow(storyId);
+        User user = userService.getUser();
+
+        Comment comment = new Comment();
+        comment.setContent(request.getContent().trim());
+        comment.setStory(story);
+        comment.setProfile(user.getProfile());
+        return commentRepository.save(comment);
+    }
+    private void checker(String content){
+        if (content == null || content.trim().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "content is required");
+        }
+    }
+
 }

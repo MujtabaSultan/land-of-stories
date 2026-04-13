@@ -1,6 +1,8 @@
 package com.stories.stories.controllers;
 
 
+import com.stories.stories.models.Comment;
+import com.stories.stories.models.CommentRequest;
 import com.stories.stories.models.Story;
 import com.stories.stories.models.StoryRequest;
 import com.stories.stories.services.StoryService;
@@ -37,5 +39,12 @@ public class StoryController {
     }
 
 
+    @PostMapping("/{storyId}/comments")
+    public void addComment(
+            @PathVariable Long storyId,
+            @RequestBody CommentRequest request
+    ) {
+     storyService.addComment(storyId, request);
+    }
 
 }

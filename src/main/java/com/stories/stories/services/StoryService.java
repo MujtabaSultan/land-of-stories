@@ -1,9 +1,6 @@
 package com.stories.stories.services;
 
-import com.stories.stories.models.Rating;
-import com.stories.stories.models.Story;
-import com.stories.stories.models.StoryRequest;
-import com.stories.stories.models.User;
+import com.stories.stories.models.*;
 import com.stories.stories.repositories.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
@@ -67,10 +64,30 @@ public class StoryService {
 
     }
 
+    private Story getStoryOrThrow(Long storyId) {
+        return storyRepository.findById(storyId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Story not found"));
+    }
+    public Report reportStory(Long storyId, ReportRequest request) {
+        if (request == null || request.getComplaint() == null || request.getComplaint().trim().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "the complaint is missing");
+        }
+
+        Story story = getStoryOrThrow(storyId);
+        User user = userService.getUser();
+
+        Report report = reportRepository
+                .findByStoryAndProfile(story, user.getProfile());
+
+        report.setStory(story);
+        report.setProfile(user.getProfile());
+        report.setComplaint(request.getComplaint().trim());
+        return reportRepository.save(report);
+    }
+
     public List<Story> allStories(){
         return storyRepository.findAll();
     }
     public Story singleStory(Long id){
-        return storyRepository.findById(id).orElseThrow(()->new RuntimeException("this story doesnt exist" + id));
-    }
+        return getStoryOrThrow(id);}
 }

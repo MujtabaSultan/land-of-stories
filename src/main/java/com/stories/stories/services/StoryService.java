@@ -3,11 +3,13 @@ package com.stories.stories.services;
 import com.stories.stories.models.*;
 import com.stories.stories.repositories.*;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Service
 public class StoryService {
     private final StoryRepository storyRepository;
     private final CommentRepository commentRepository;

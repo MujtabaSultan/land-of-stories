@@ -2,8 +2,10 @@ package com.stories.stories.controllers;
 
 import com.stories.stories.models.*;
 import com.stories.stories.services.UserService;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/auth/users")
@@ -15,6 +17,10 @@ public class UserController {
         this.userService=userService;
     }
 
+    @PostMapping(value = "/profile-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Image> uploadProfileImage(@RequestParam("file") MultipartFile file) {
+        return ResponseEntity.ok(userService.uploadProfileImage(file));
+    }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest){
@@ -65,6 +71,11 @@ public class UserController {
     public void softDelete(){
         System.out.println("calling soft delete user in user controller ========>");
         userService.softDelete();
+    }
+
+    @GetMapping("/profile")
+    public User getProfile(){
+        return userService.getUser();
     }
 
 

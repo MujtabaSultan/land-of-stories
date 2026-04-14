@@ -1,14 +1,17 @@
 package com.stories.stories.services;
 
+import com.cloudinary.Cloudinary;
 import com.stories.stories.mailing.AccountPasswordResetEmailContext;
 import com.stories.stories.mailing.AccountVerificationEmailContext;
 import com.stories.stories.mailing.EmailService;
 import com.stories.stories.models.*;
+import com.stories.stories.repositories.ImageRepository;
 import com.stories.stories.repositories.ProfileRepository;
 import com.stories.stories.repositories.UserRepository;
 import com.stories.stories.security.JWTUtils;
 import com.stories.stories.security.MyUserDetails;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,6 +19,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.io.IOException;
+import java.util.Map;
 
 @Service
 public class UserService {
@@ -29,10 +37,15 @@ public class UserService {
     private EmailService emailService;
     private final AuthenticationManager authenticationManager;
     private final JWTUtils jwtUtils;
+    private final Cloudinary cloudinary;
+    private final ImageRepository imageRepository;
+
+
 
     public UserService(UserRepository userRepository
             ,PasswordEncoder passwordEncoder,SecureTokenService secureTokenService
-            ,EmailService emailService,
+            ,EmailService emailService,Cloudinary cloudinary,
+                       ImageRepository imageRepository,
                        JWTUtils jwtUtils,
                        ProfileRepository profileRepository,
                        AuthenticationManager authenticationManager){
@@ -43,6 +56,8 @@ public class UserService {
         this.secureTokenService=secureTokenService;
         this.authenticationManager=authenticationManager;
         this.jwtUtils=jwtUtils;
+        this.imageRepository=imageRepository;
+        this.cloudinary=cloudinary;
     }
 
     public void sendConfirmationEmail(User user) {
@@ -179,4 +194,43 @@ public class UserService {
     public User getUser() {
         return ((MyUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
     }
+
+
+    public Image uploadProfileImage(MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Image file is required");
+        }
+
+        User user = getUser();
+        Profile profile = user.getProfile();
+        if (profile == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User profile does not exist");
+        }
+
+        try {
+            Map<?, ?> uploadResult = cloudinary.uploader().upload(file.getBytes(), Map.of(
+                    "folder", "stories/profile-images",
+                    "resource_type", "image"
+            ));
+
+            String publicId = String.valueOf(uploadResult.get("public_id"));
+            String secureUrl = String.valueOf(uploadResult.get("secure_url"));
+
+            Image image = profile.getImage();
+            if (image == null) {
+                image = new Image();
+                image.setProfile(profile);
+            }
+
+            image.setName(publicId);
+            image.setUrl(secureUrl);
+            image = imageRepository.save(image);
+            profile.setImage(image);
+            userRepository.save(user);
+            return image;
+        } catch (IOException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "Failed to upload image to Cloudinary");
+        }
+    }
+
 }

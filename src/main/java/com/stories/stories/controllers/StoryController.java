@@ -1,13 +1,8 @@
 package com.stories.stories.controllers;
 
 
-import com.stories.stories.models.Comment;
-import com.stories.stories.models.CommentRequest;
-import com.stories.stories.models.Story;
-import com.stories.stories.models.StoryRequest;
+import com.stories.stories.models.*;
 import com.stories.stories.services.StoryService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,7 +17,7 @@ public class StoryController {
         this.storyService = storyService;
     }
     @GetMapping
-    public List<Story> listStories() {
+    public List<StorySummaryResponse> listStories() {
 
         return storyService.allStories();
     }
@@ -45,6 +40,17 @@ public class StoryController {
             @RequestBody CommentRequest request
     ) {
      storyService.addComment(storyId, request);
+    }
+    @PostMapping("/{storyId}/rating")
+    public void rateStory(
+            @PathVariable Long storyId,
+            @RequestBody Rating request
+    ) {
+        storyService.rateStory(storyId, request.getScore());
+    }
+    @GetMapping("{storyId}")
+    public StoryDetailsResponse getStory(@PathVariable Long storyId){
+        return storyService.singleStory(storyId);
     }
 
 }

@@ -8,9 +8,15 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.stream.Collectors;
 
 @Service
 public class StoryService {
+    private static final Map<String, ReadWriteLock> TITLE_LOCKS = new ConcurrentHashMap<>();
     private final StoryRepository storyRepository;
     private final CommentRepository commentRepository;
     private final RatingRepository ratingRepository;
@@ -28,19 +34,28 @@ public class StoryService {
         this.userRepository = userRepository;
         this.userService=userService;
     }
-    public List<Story> getAllStories() {
-        return storyRepository.findAll();
-    }
-
     public Story createStory(StoryRequest request) {
         User user = userService.getUser();
+        checker(request.getTitle());
+        checker(request.getContent());
+        String normalizedTitle = normalizeTitle(request.getTitle());
+        ReadWriteLock titleLock = TITLE_LOCKS.computeIfAbsent(normalizedTitle, key -> new ReentrantReadWriteLock());
 
-        Story story = new Story();
-        story.setTitle(request.getTitle().trim());
-        story.setContent(request.getContent().trim());
-        story.setPublishDate(LocalDateTime.now());
-        story.setProfile(user.getProfile());
-        return storyRepository.save(story);
+        titleLock.writeLock().lock();
+        try {
+            if (storyRepository.existsByTitleIgnoreCase(request.getTitle().trim())) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "Story title already exists");
+            }
+
+            Story story = new Story();
+            story.setTitle(request.getTitle().trim());
+            story.setContent(request.getContent().trim());
+            story.setPublishDate(LocalDateTime.now());
+            story.setProfile(user.getProfile());
+            return storyRepository.save(story);
+        } finally {
+            titleLock.writeLock().unlock();
+        }
     }
     public void deleteStory(Long id){
         Story story =storyRepository.findById(id).orElseGet(null);
@@ -50,6 +65,7 @@ public class StoryService {
         }
         else {
             System.out.println("thats not yours to delete");
+            
         }
     }
     public void rateStory(Long storyId,int rating){
@@ -85,11 +101,15 @@ public class StoryService {
         return reportRepository.save(report);
     }
 
-    public List<Story> allStories(){
-        return storyRepository.findAll();
+    public List<StorySummaryResponse> allStories() {
+        return storyRepository.findAll().stream()
+                .map(this::toStorySummaryResponse)
+                .collect(Collectors.toList());
     }
-    public Story singleStory(Long id){
-        return getStoryOrThrow(id);}
+    public StoryDetailsResponse singleStory(Long id) {
+        Story story = getStoryOrThrow(id);
+        return toStoryDetailsResponse(story);
+    }
 
     public Comment addComment(Long storyId, CommentRequest request) {
 
@@ -108,6 +128,56 @@ public class StoryService {
         if (content == null || content.trim().isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "content is required");
         }
+    }
+
+    private String normalizeTitle(String title) {
+        return title.trim().toLowerCase();
+    }
+
+    private StorySummaryResponse toStorySummaryResponse(Story story) {
+        StorySummaryResponse response = new StorySummaryResponse();
+        response.setId(story.getId());
+        response.setTitle(story.getTitle());
+        response.setContent(story.getContent());
+        response.setPublishDate(story.getPublishDate());
+        response.setAverageRating(story.getAverageRating());
+        response.setRatingsCount(story.getRatings() == null ? 0 : story.getRatings().size());
+        response.setWriter(toWriterResponse(story.getProfile()));
+        return response;
+    }
+
+    private StoryDetailsResponse toStoryDetailsResponse(Story story) {
+        StoryDetailsResponse response = new StoryDetailsResponse();
+        response.setId(story.getId());
+        response.setTitle(story.getTitle());
+        response.setContent(story.getContent());
+        response.setPublishDate(story.getPublishDate());
+        response.setAverageRating(story.getAverageRating());
+        response.setRatingsCount(story.getRatings() == null ? 0 : story.getRatings().size());
+        response.setWriter(toWriterResponse(story.getProfile()));
+
+        List<StoryCommentResponse> commentResponses = story.getComment() == null
+                ? List.of()
+                : story.getComment().stream().map(comment -> {
+                    StoryCommentResponse commentResponse = new StoryCommentResponse();
+                    commentResponse.setId(comment.getId());
+                    commentResponse.setContent(comment.getContent());
+                    commentResponse.setWriter(toWriterResponse(comment.getProfile()));
+                    return commentResponse;
+                }).collect(Collectors.toList());
+        response.setComments(commentResponses);
+        return response;
+    }
+
+    private StoryWriterResponse toWriterResponse(Profile profile) {
+        if (profile == null) {
+            return null;
+        }
+        StoryWriterResponse writerResponse = new StoryWriterResponse();
+        writerResponse.setId(profile.getId());
+        writerResponse.setFirstName(profile.getFirstName());
+        writerResponse.setLastName(profile.getLastName());
+        return writerResponse;
     }
 
 }

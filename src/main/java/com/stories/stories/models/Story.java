@@ -1,12 +1,12 @@
 package com.stories.stories.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @Entity
 @Data
@@ -41,5 +41,13 @@ public class Story {
 
 
 
-
+    public double getAverageRating() {
+        if (ratings == null || ratings.isEmpty()) {
+            return 0.0;
+        }
+        return ratings.stream()
+                .mapToInt(Rating::getScore)
+                .average()
+                .orElse(0.0);
+    }
 }

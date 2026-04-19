@@ -202,7 +202,7 @@ public class UserService {
             userRepository.save(user);
         }
         else{
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "cant delete the user");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "cant delete the user");
 
         }
     }

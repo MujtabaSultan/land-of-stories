@@ -60,7 +60,7 @@ public class StoryService {
     public void deleteStory(Long id){
         Story story =storyRepository.findById(id).orElseGet(null);
         User currentUser = userService.getUser();
-        if(story.getProfile().getId().equals(currentUser.getProfile().getId())){
+        if(story.getProfile().getId().equals(currentUser.getProfile().getId())||currentUser.isAdmin()){
             storyRepository.deleteById(id);
         }
         else {

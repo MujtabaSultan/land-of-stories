@@ -20,6 +20,8 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private boolean isAdmin;
+
     private String userName;
     @Column(unique = true)
     private String emailAddress;
@@ -38,6 +40,7 @@ public class User {
     public String getPassword(){
         return password;
     }
+
 
 
 

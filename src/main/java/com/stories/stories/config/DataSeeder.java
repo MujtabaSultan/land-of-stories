@@ -5,6 +5,7 @@ import com.stories.stories.models.Story;
 import com.stories.stories.models.User;
 import com.stories.stories.repositories.StoryRepository;
 import com.stories.stories.repositories.UserRepository;
+import com.stories.stories.security.Hasher;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -15,13 +16,16 @@ public class DataSeeder implements CommandLineRunner {
 
     private final UserRepository userRepository;
     private final StoryRepository storyRepository;
+    private final Hasher hasher;
 
     public DataSeeder(
             UserRepository userRepository,
-            StoryRepository storyRepository
+            StoryRepository storyRepository,
+            Hasher hasher
     ) {
         this.userRepository = userRepository;
         this.storyRepository = storyRepository;
+        this.hasher=hasher;
     }
 
     @Override
@@ -33,9 +37,10 @@ public class DataSeeder implements CommandLineRunner {
         User user1 = new User();
         user1.setUserName("sara");
         user1.setEmailAddress("sara@example.com");
-        user1.setPassword("password123");
+        user1.setPassword(hasher.passwordEncoder().encode("password123") );
         user1.setAccountVerified(true);
         user1.setActivated(true);
+        user1.setAdmin(true);
 
         Profile profile1 = new Profile();
         profile1.setFirstName("Sara");

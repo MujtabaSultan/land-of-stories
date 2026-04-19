@@ -168,14 +168,43 @@ public class UserService {
         }
     }
 
+    //self soft delete
     public void softDelete() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         System.out.println(authentication.getPrincipal());
         MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
         User user = myUserDetails.getUser();
-        user.setActivated(false);
-        //user.setAccountVerified(false);
-        userRepository.save(user);
+        User currentUser = getUser();
+        if(user.getId().equals(currentUser.getId())||currentUser.isAdmin()){
+
+            user.setActivated(false);
+            //user.setAccountVerified(false);
+            userRepository.save(user);
+        }
+        else{
+            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "cant delete the user");
+
+        }
+    }
+
+
+    private User getUserOrThrow(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+    }
+    public void otherSoftDelete(Long id) {
+        User user = getUserOrThrow(id);
+        User currentUser = getUser();
+        if(user.getId().equals(currentUser.getId())||currentUser.isAdmin()){
+
+            user.setActivated(false);
+            //user.setAccountVerified(false);
+            userRepository.save(user);
+        }
+        else{
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "cant delete the user");
+
+        }
     }
 
     public void resetPasswordActivator(String token, ForgotPasswordForm form) {

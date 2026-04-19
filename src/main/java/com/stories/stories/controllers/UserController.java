@@ -73,6 +73,12 @@ public class UserController {
         userService.softDelete();
     }
 
+    @DeleteMapping("/delete/{id}")
+    public void softDeleteByAdmin(@PathVariable Long id){
+        System.out.println("calling soft delete user by Admin in user controller ========>");
+        userService.otherSoftDelete(id);
+    }
+
     @GetMapping("/profile")
     public User getProfile(){
         return userService.getUser();

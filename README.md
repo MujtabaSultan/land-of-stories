@@ -30,17 +30,12 @@ Profile images are stored via Cloudinary, and all sensitive account flows (email
 - As a registered user, I receive a verification email and must confirm my account before it is fully active.
 - As a user, I can log in with my email and password and receive a JWT token to authenticate future requests.
 - As a logged-in user, I can change my password by providing my current password and a new one.
-- As a user who forgot their password, I can request a password reset email and use the link to set a new password.
-- As a user, I can upload a profile picture that is stored and served via Cloudinary.
-- As a user, I can soft-delete my own account, deactivating it without permanently removing data.
-- As an admin, I can soft-delete any user's account by their ID.
 
 ### Stories
 - As a logged-in user, I can browse a feed of all published stories with their title, author, rating, and publish date.
 - As a logged-in user, I can read the full content of a specific story along with its comments.
 - As a logged-in user, I can publish a new story with a title and content. Duplicate titles are rejected.
-- As a story author, I can delete my own story.
-- As an admin, I can delete any story on the platform.
+
 
 ### Engagement
 - As a logged-in user, I can leave a comment on any story.

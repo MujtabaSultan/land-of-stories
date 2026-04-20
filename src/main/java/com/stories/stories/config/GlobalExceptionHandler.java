@@ -14,6 +14,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<Map<String, Object>> handleResponseStatusException(ResponseStatusException ex) {
         Map<String, Object> body = new LinkedHashMap<>();
+
         body.put("status", ex.getStatusCode().value());
         body.put("message", ex.getReason());
         return new ResponseEntity<>(body, ex.getStatusCode());

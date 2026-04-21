@@ -29,6 +29,7 @@ public class Profile {
     @OneToOne(cascade = CascadeType.ALL)
     private Image image;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "profile" ,orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Report> report;
 

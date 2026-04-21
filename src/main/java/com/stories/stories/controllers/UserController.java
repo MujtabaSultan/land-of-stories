@@ -84,6 +84,11 @@ public class UserController {
         return userService.getUser();
     }
 
+    @PutMapping("/profile")
+    public User updateProfile(@RequestBody UpdateProfileRequest request) {
+        return userService.updateProfile(request.getFirstName(), request.getLastName(), request.getProfileDescription());
+    }
+
 
 
 }

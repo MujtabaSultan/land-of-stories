@@ -224,6 +224,17 @@ public class UserService {
         return ((MyUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
     }
 
+    public User updateProfile(String firstName, String lastName, String profileDescription) {
+        User user = getUser();
+        Profile profile = user.getProfile();
+
+        if (firstName != null) profile.setFirstName(firstName);
+        if (lastName != null) profile.setLastName(lastName);
+        if (profileDescription != null) profile.setProfileDescription(profileDescription);
+
+        profileRepository.save(profile);
+        return user;
+    }
 
     public Image uploadProfileImage(MultipartFile file) {
         if (file == null || file.isEmpty()) {

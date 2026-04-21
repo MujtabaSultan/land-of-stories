@@ -12,6 +12,12 @@ Profile images are stored via Cloudinary, and all sensitive account flows (email
 
 ---
 
+## Diagram
+
+
+![Diagram](./stories-diagram.png)
+
+
 ## Tech Stack
 
 - **Java 17** / **Spring Boot 4**
